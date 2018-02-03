@@ -21,5 +21,6 @@ transmission_port: 9091
 
 
 # Season regex
-# Specify your own regex to match your series season names
-#season_regex: 's\d\de\d\d'
+# Specify your own regex to match your tv shows seasons
+# This is default
+#season_regex: 's0?(\d+)e\d\d'

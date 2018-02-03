@@ -1,0 +1,25 @@
+download_dir: '/your/downloads'
+series_dir: '/your/series'
+movie_dir: '/your/movies'
+
+# The seed time for serie episodes
+series_seed_time: 5
+
+# The seed time for movie episodes
+movie_seed_time: 30
+
+# Movie identifiers
+movie_identifiers:
+  - '720p'
+  - '1080p'
+
+# Transmission config
+transmission_host: 127.0.0.1
+transmission_user: example
+transmission_password: example
+transmission_port: 9091
+
+
+# Season regex
+# Specify your own regex to match your series season names
+#season_regex: 's\d\de\d\d'

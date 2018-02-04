@@ -1,8 +1,8 @@
 # transfermission
 
 ## Intro
-A script for handling torrents in transmission (https://transmissionbt.com/).  
-Having transmission already setup is required.
+Python scripts for handling torrents in transmission (https://transmissionbt.com/).  
+Having transmission with RPC enabled is required.
 
 Features:
 * automatically symlink movies and tv series while seeding.
@@ -11,7 +11,7 @@ Features:
 
 ## Install & configure
 1. clone repository
-2. pip install -r requirements.txt (recommend virtualenv ofc)
+2. `pip install -r requirements.txt` (recommend virtualenv ofc)
 3. copy `transfermission_config.yaml.example` to `transfermission_config.yaml` (Keep it in the same dir)
 4. Update `transfermission_config.yaml` to match your environment
 
@@ -19,6 +19,7 @@ Features:
 Use `cli.py --help` to see available options.
 
 ### Examples
+#### Dry run
 ```
 $ transfermission/cli.py --dry-run --log-level debug
 2018-02-03 12:26:57,216 root         INFO     Dry run mode. No changes will be done

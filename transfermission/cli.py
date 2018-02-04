@@ -31,6 +31,9 @@ def cli(dry_run, log_level):
         'debug': logging.DEBUG,
     }
     log.setLevel(log_levels.get(log_level))
+    if log_level == 'debug':
+        # Set transmissonrpc logger to logging INFO when we run debug
+        logging.getLogger('transmissionrpc').setLevel(logging.INFO)
 
     config = read_config('transfermission_config.yaml')
     movie_identifiers = config['movie_identifiers']

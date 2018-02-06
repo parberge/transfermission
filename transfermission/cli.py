@@ -81,7 +81,7 @@ def cli(dry_run, log_level):
             log.debug('Torrent been seeding for %s day(s)', torrent_age)
 
         if torrent_age > file_seed_time or torrent.isFinished:
-            log.debug('Torrent %s is complete', torrent.name)
+            log.info('Torrent %s is complete (reached max seed time or seed ratio)', torrent.name)
             operation = 'move'
         elif torrent.status != 'downloading':
             operation = 'symlink'
@@ -91,7 +91,7 @@ def cli(dry_run, log_level):
 
         if operation == 'move':
             result = remove_torrent(torrent, session=transmission_session, dry_run=dry_run)
-            if not result:
+            if not result and not dry_run:
                 log.warning('Skipping moving torrent since stop failed')
 
         if operation:

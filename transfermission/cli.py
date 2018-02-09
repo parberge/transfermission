@@ -53,6 +53,8 @@ def cli(dry_run, log_level):
         operation = None
         log.debug('Checking torrent %s', torrent.name)
         log.debug('Status is: %s',  torrent.status)
+        if torrent.status == 'downloading':
+            continue
 
 
         # Use regex to identify if movie or tv serie.
@@ -76,11 +78,11 @@ def cli(dry_run, log_level):
         log.debug('File max seed time in days: %s', file_seed_time)
 
         torrent_age = 0
-        if torrent.date_done:
+        if torrent.date_done and torrent.status == 'seeding':
             torrent_age = age(torrent.date_done)
             log.debug('Torrent been seeding for %s day(s)', torrent_age)
 
-        if torrent_age > file_seed_time or torrent.isFinished:
+        if torrent_age >= file_seed_time or torrent.isFinished:
             log.info('Torrent %s is complete (reached max seed time or seed ratio)', torrent.name)
             operation = 'move'
         elif torrent.status != 'downloading':

@@ -72,6 +72,7 @@ def move(file_src_path, file_dest_path, dry_run=False):
 def handle_file(file_src_path, file_dest_path, operation, dry_run=False):
     """ Symlink or move files """
 
+    log.debug('Dest is: %s', file_dest_path)
     if operation == 'symlink':
         if not os.path.islink(file_dest_path):
             if dry_run:

@@ -56,7 +56,6 @@ def cli(dry_run, log_level):
         if torrent.status == 'downloading':
             continue
 
-
         # Use regex to identify if movie or tv serie.
         # TODO: Use external resource (imdb etc) for this instead
         if re.search('s\d\de\d\d', torrent.name, re.I):
@@ -85,19 +84,19 @@ def cli(dry_run, log_level):
         if torrent_age >= file_seed_time or torrent.isFinished:
             log.info('Torrent %s is complete (reached max seed time or seed ratio)', torrent.name)
             operation = 'move'
-        elif torrent.status != 'downloading':
+        else:
+            log.info('Torrent %s is in status: %s', torrent.name,torrent.status)
             operation = 'symlink'
 
-        else:
-            log.warning('Torrent %s is not seeding or finished', torrent.name)
-
-        if operation == 'move':
-            result = remove_torrent(torrent, session=transmission_session, dry_run=dry_run)
-            if not result and not dry_run:
-                log.warning('Skipping moving torrent since stop failed')
 
         if operation:
             log.debug('Operation is: %s', operation)
+            if operation == 'move':
+                result = remove_torrent(torrent, session=transmission_session, dry_run=dry_run)
+                if not result and not dry_run:
+                    log.warning('Skipping moving torrent since stop failed')
+                    continue
+
             process_item(item_type=file_type, torrent=torrent,
                          operation=operation, config=config, dry_run=dry_run)
         else:

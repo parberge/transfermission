@@ -59,14 +59,14 @@ def remove_torrent(torrent, session, dry_run=False):
 def move(file_src_path, file_dest_path, dry_run=False):
     """ Move a file """
     if dry_run:
-        log.info('Would move %s to %s' % (file_src_path, file_dest_path))
+        log.info('Would move %s to %s' % (file_src_path.rstrip('/'), file_dest_path))
     else:
-        log.info('Moving %s to %s' % (file_src_path, file_dest_path))
+        log.info('Moving %s to %s' % (file_src_path.rstrip('/'), file_dest_path))
         if os.path.islink(file_dest_path):
             log.debug('destination is a link, removing it')
             os.remove(file_dest_path)
 
-        shutil.move(file_src_path, file_dest_path)
+        shutil.move(file_src_path.rstrip('/'), file_dest_path)
 
 
 def handle_file(file_src_path, file_dest_path, operation, dry_run=False):
@@ -81,7 +81,10 @@ def handle_file(file_src_path, file_dest_path, operation, dry_run=False):
                 os.symlink(file_src_path, file_dest_path)
                 log.info('Created link: %s to %s' % (file_dest_path, file_src_path))
         else:
-            log.debug('Symlink already exists')
+            if os.path.exists(file_dest_path):
+                log.debug('Symlink already exists')
+            else:
+                log.warning("Symlink %s might be broken", file_dest_path)
 
     elif operation == 'move':
         move(file_src_path, file_dest_path, dry_run=dry_run)

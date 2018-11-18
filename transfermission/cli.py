@@ -62,7 +62,7 @@ def cli(dry_run, log_level):
             file_type = 'series'
 
         elif re.search('\.s\d\d\.', torrent.name, re.I):
-            log.info('Probably a whole season. Not supported...')
+            log.info('%s is probably a whole season. Not supported...' % torrent.name)
             continue
 
         elif True in (item.lower() in torrent.name for item in movie_identifiers):

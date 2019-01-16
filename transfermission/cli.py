@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import logging
 import re
-import click
-import transmissionrpc
 from datetime import datetime, timedelta
 
-from utils import read_config, age, remove_torrent, process_item
+import click
+import transmissionrpc
+
+from config import config
 from rule import Rule
+from utils import read_config
 
 log = logging.getLogger()
 handler = logging.StreamHandler()
@@ -19,7 +21,7 @@ log.addHandler(handler)
 @click.command()
 @click.option(
     '--dry-run',
-    help='Show what would be done',
+    help='Don\'t run actions',
     is_flag=True,
 )
 @click.option(
@@ -37,20 +39,25 @@ def cli2(dry_run, log_level):
         # Set transmissonrpc logger to logging INFO when we run debug
         logging.getLogger('transmissionrpc').setLevel(logging.INFO)
 
-    log.debug('Reading config')
-    config = read_config('transfermission_config.yaml')
-    user = config['transmission_user']
-    password = config['transmission_password']
-    url = config['transmission_url']
-    rules = [Rule(**rule_config) for rule_config in config['rules']]
-
+    config.update(read_config('transfermission_config.yaml'))
+    config['dryrun'] = dry_run
     if dry_run:
         log.info('Dry run mode. No changes will be done')
 
-    #transmission_session = transmissionrpc.Client(address=url, user=user, password=password)
+    rules = [Rule(**rule_config) for rule_config in config['rules']]
 
+    #transmission_session = transmissionrpc.Client(
+    #    address=config['transmission_url']
+    #    user=config['transmission_user']
+    #    password=config['transmission_password']
+    #)
     #torrents = transmission_session.get_torrents()
-    torrents = mock_torrents()
+
+    session = lambda: None
+    session.get_torrents = mock_torrents
+
+
+    torrents = session.get_torrents()
 
     for torrent in torrents:
         log.debug('Checking torrent %s', torrent.name)

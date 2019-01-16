@@ -2,6 +2,8 @@ import logging
 import re
 from datetime import datetime
 
+from config import config
+
 log = logging.getLogger(__name__)
 
 class Rule:
@@ -24,8 +26,11 @@ class Rule:
         for i, action in enumerate(self.actions, 1):
             # TODO: support complex config as arg
             action_name, action_arg = list(action.items())[0]
-            log.info('Running action #%s: %s', i, action_name)
-            getattr(self, f'_action_{action_name}')(torrent, action_arg)
+            if config['dryrun']:
+                log.info('Dryrun - skipping running action #%s: %s', i, action_name)
+            else:
+                log.info('Running action #%s: %s', i, action_name)
+                getattr(self, f'_action_{action_name}')(torrent, action_arg)
 
     def _condition_name_matches(self, torrent, pattern):
         return re.search(pattern, torrent.name)

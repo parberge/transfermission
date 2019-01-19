@@ -10,7 +10,7 @@ class Rule:
     id = 0
     def __init__(self, conditions=None, actions=None):
         self.id = Rule.id = Rule.id + 1
-        self.conditions = conditions or []
+        self.conditions = conditions or {}
         self.actions = actions or []
 
     def matches(self, torrent):
@@ -20,7 +20,9 @@ class Rule:
         ])
 
     def run_condition(self, torrent, condition_name, condition_value):
-        return getattr(self, f'_condition_{condition_name}')(torrent, condition_value)
+        res = getattr(self, f'_condition_{condition_name}')(torrent, condition_value)
+        log.debug('Condition: %s: %s - %s', condition_name, condition_value, res)
+        return res
 
     def run_actions(self, torrent):
         for i, action in enumerate(self.actions, 1):
@@ -33,7 +35,7 @@ class Rule:
                 getattr(self, f'_action_{action_name}')(torrent, action_arg)
 
     def _condition_name(self, torrent, pattern):
-        return re.search(pattern, torrent.name)
+        return bool(re.search(pattern, torrent.name))
 
     def _condition_name_not(self, *args, **kwargs):
         return not self._condition_name(*args, **kwargs)
@@ -52,6 +54,8 @@ class Rule:
         # Bytes -> MBytes
         return torrent.totalSize/1024/1024 >= size
 
+    def _condition_download_dir(self, torrent, path):
+        return torrent.downloadDir == path
 
     def _action_move_data(self, torrent, path):
         log.info('Moving "%s" to %s', torrent.name, path)

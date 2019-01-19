@@ -31,7 +31,7 @@ log.addHandler(handler)
     help='Verbose',
     is_flag=True,
 )
-def cli2(dry_run, verbose):
+def cli(dry_run, verbose):
     log.setLevel(logging.DEBUG if verbose else logging.INFO)
     if verbose:
         # Set transmissonrpc logger to logging INFO when we run debug
@@ -55,10 +55,11 @@ def cli2(dry_run, verbose):
     #session.get_torrents = mock_torrents
     #torrents = session.get_torrents()
     for torrent in torrents:
-        log.debug('%s: %s, %s', torrent.name, torrent.status, torrent.totalSize)
+        log.debug('Checking %s (%s)', torrent.name, torrent.status)
         for rule in rules:
+            log.debug('Checking rule #%s conditions', rule.id)
             if rule.matches(torrent):
-                log.info('Torrent %s matches rule #%s. Running actions.', torrent.name, rule.id)
+                log.info('%s matches rule #%s. Running actions.', torrent.name, rule.id)
                 rule.run_actions(torrent)
 
 
@@ -77,4 +78,4 @@ def mock_torrents():
 
 
 if __name__ == '__main__':
-    cli2()
+    cli()

@@ -10,13 +10,14 @@ class Rule:
     id = 0
     def __init__(self, conditions=None, actions=None):
         self.id = Rule.id = Rule.id + 1
-        self.conditions = conditions or {}
+        self.conditions = conditions or []
         self.actions = actions or []
 
     def matches(self, torrent):
         return all([
-            self.run_condition(torrent, condition_name, condition_value)
-            for condition_name, condition_value in self.conditions.items()
+            # Each condition is a one key dict. Send in key and value as args.
+            self.run_condition(torrent, *list(condition.items())[0])
+            for condition in self.conditions
         ])
 
     def run_condition(self, torrent, condition_name, condition_value):

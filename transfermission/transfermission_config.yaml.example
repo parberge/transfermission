@@ -5,11 +5,11 @@ transmission_password: example
 
 rules:
   - conditions:
-      #name_matches: '\W[sS]\d{2}'
-      name_matches: '[tT]orrent \d'
-      completed: true
-      ratio: 0.2
-      age: 1
+      #- name_matches: '\W[sS]\d{2}'
+      - name_matches: '[tT]orrent \d'
+      - completed: true
+      - ratio: 0.2
+      - age: 1
     actions:
       - move_data: '/other_path'
       #- symlink: '/some/path'

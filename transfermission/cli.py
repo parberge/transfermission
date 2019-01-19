@@ -19,19 +19,12 @@ log.addHandler(handler)
 
 
 @click.command()
-@click.option(
-    '--dry-run',
-    '-d',
-    help='Don\'t run actions',
-    is_flag=True,
+@click.option('--dry-run', '-d', help='Don\'t run actions', is_flag=True)
+@click.option('--verbose', '-v', help='Verbose', is_flag=True)
+@click.option('--name-condition', '-n', help='Add an extra name condition to all rules. '
+    'Handy for temporarily limiting the scope.',
 )
-@click.option(
-    '--verbose',
-    '-v',
-    help='Verbose',
-    is_flag=True,
-)
-def cli(dry_run, verbose):
+def cli(dry_run, verbose, name_condition=None):
     log.setLevel(logging.DEBUG if verbose else logging.INFO)
     if verbose:
         # Set transmissonrpc logger to logging INFO when we run debug
@@ -43,6 +36,8 @@ def cli(dry_run, verbose):
         log.info('Dry run mode. No changes will be done')
 
     rules = [Rule(**rule_config) for rule_config in config['rules']]
+    if name_condition:
+        [r.conditions.append({'name': name_condition}) for r in rules]
 
     transmission_session = transmissionrpc.Client(
         address=config['transmission_url'],

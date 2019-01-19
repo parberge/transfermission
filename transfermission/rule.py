@@ -32,20 +32,31 @@ class Rule:
                 log.info('Running action #%s: %s', i, action_name)
                 getattr(self, f'_action_{action_name}')(torrent, action_arg)
 
-    def _condition_name_matches(self, torrent, pattern):
+    def _condition_name(self, torrent, pattern):
         return re.search(pattern, torrent.name)
 
-    def _condition_completed(self, torrent, value):
-        return bool(torrent.date_done)
+    def _condition_name_not(self, *args, **kwargs):
+        return not self._condition_name(*args, **kwargs)
 
-    def _condition_ratio(self, torrent, value):
-        return torrent.ratio >= value
+    def _condition_completed(self, torrent, completed):
+        return bool(torrent.date_done) == completed
 
-    def _condition_age(self, torrent, value):
-        return (datetime.now() - torrent.date_done).days >= value
+    def _condition_ratio(self, torrent, ratio):
+        return torrent.ratio >= ratio
+
+    def _condition_age(self, torrent, days):
+        return (datetime.now() - torrent.date_done).days >= days
+
+    def _condition_size(self, torrent, size):
+        """True if torrent total size is larger than `size` in MB"""
+        # Bytes -> MBytes
+        return torrent.totalSize/1024/1024 >= size
+
 
     def _action_move_data(self, torrent, path):
-        log.info('Moving %s to %s...', torrent.name, path)
+        log.info('Moving "%s" to %s', torrent.name, path)
+        # Give a generous timeout since moving loads of GBs can take a while
+        torrent.move_data(path, timeout=1200)
 
     def _action_call_url(self, torrent, url):
         log.info('Calling URL "%s"', url)

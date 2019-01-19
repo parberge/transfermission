@@ -21,21 +21,19 @@ log.addHandler(handler)
 @click.command()
 @click.option(
     '--dry-run',
+    '-d',
     help='Don\'t run actions',
     is_flag=True,
 )
 @click.option(
-    '--log-level',
-    help='Log level',
-    default='info',
+    '--verbose',
+    '-v',
+    help='Verbose',
+    is_flag=True,
 )
-def cli2(dry_run, log_level):
-    log_levels = {
-        'info': logging.INFO,
-        'debug': logging.DEBUG,
-    }
-    log.setLevel(log_levels.get(log_level))
-    if log_level == 'debug':
+def cli2(dry_run, verbose):
+    log.setLevel(logging.DEBUG if verbose else logging.INFO)
+    if verbose:
         # Set transmissonrpc logger to logging INFO when we run debug
         logging.getLogger('transmissionrpc').setLevel(logging.INFO)
 
@@ -46,22 +44,18 @@ def cli2(dry_run, log_level):
 
     rules = [Rule(**rule_config) for rule_config in config['rules']]
 
-    #transmission_session = transmissionrpc.Client(
-    #    address=config['transmission_url']
-    #    user=config['transmission_user']
-    #    password=config['transmission_password']
-    #)
-    #torrents = transmission_session.get_torrents()
+    transmission_session = transmissionrpc.Client(
+        address=config['transmission_url'],
+        user=config['transmission_user'],
+        password=config['transmission_password']
+    )
+    torrents = transmission_session.get_torrents()
 
-    session = lambda: None
-    session.get_torrents = mock_torrents
-
-
-    torrents = session.get_torrents()
-
+    #session = lambda: None
+    #session.get_torrents = mock_torrents
+    #torrents = session.get_torrents()
     for torrent in torrents:
-        log.debug('Checking torrent %s', torrent.name)
-        log.debug('Status is: %s',  torrent.status)
+        log.debug('%s: %s, %s', torrent.name, torrent.status, torrent.totalSize)
         for rule in rules:
             if rule.matches(torrent):
                 log.info('Torrent %s matches rule #%s. Running actions.', torrent.name, rule.id)

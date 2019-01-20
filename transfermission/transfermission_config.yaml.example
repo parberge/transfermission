@@ -11,6 +11,12 @@ rules:
       - ratio: 0.2
       - age: 1
     actions:
-      - move_data: '/other_path'
+      # Simple form (action takes one arg):
+      - move_data: '/some/path'
+      # Complex form (action takes named args):
+      - move_data:
+          path: '/some/path'
+          # Make sure torrent is downloaded to its own dir
+          use_dir: true
       #- symlink: '/some/path'
       - call_url: 'http://kodi/updatelibrary'

@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 from datetime import datetime
 
@@ -33,7 +34,12 @@ class Rule:
                 log.info('Dryrun - skipping running action #%s: %s', i, action_name)
             else:
                 log.info('Running action #%s: %s', i, action_name)
-                getattr(self, f'_action_{action_name}')(torrent, action_arg)
+                action_method = getattr(self, f'_action_{action_name}')
+                # Support simple or complex action config
+                if isinstance(action_arg, dict):
+                    action_method(torrent, **action_arg)
+                else:
+                    action_method(torrent, action_arg)
 
     def _condition_name(self, torrent, pattern):
         return bool(re.search(pattern, torrent.name))
@@ -58,7 +64,14 @@ class Rule:
     def _condition_download_dir(self, torrent, path):
         return torrent.downloadDir == path
 
-    def _action_move_data(self, torrent, path):
+    def _action_move_data(self, torrent, path, use_dir=False):
+        # Check if the first file is in a directory
+        torrent_uses_dir = '/' in torrent.files()[0]['name']
+        if use_dir and not torrent_uses_dir:
+            dir_name = os.path.splitext(torrent.name)[0]
+            path = os.path.join(path, dir_name)
+            log.info('Adding directory to path: %s', path)
+
         log.info('Moving "%s" to %s', torrent.name, path)
         # Give a generous timeout since moving loads of GBs can take a while
         torrent.move_data(path, timeout=1200)

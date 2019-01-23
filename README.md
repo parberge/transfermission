@@ -9,11 +9,20 @@ Features:
 * stop and remove torrents when seeded completed.
 * move movie or tv show to your specified directory.
 
-## Install & configure
+
+## Install
 1. clone repository
-2. `pip install -r requirements.txt` (recommend virtualenv ofc)
-3. copy `transfermission_config.yaml.example` to `transfermission_config.yaml` (Keep it in the same dir)
-4. Update `transfermission_config.yaml` to match your environment
+2. Install depedencies
+### With pipenv (recommended)
+`pipenv shell && pipenv sync --dev`  
+__Note__: Remove `--dev` if you don't want to install dev deps
+
+#### With pip
+`pip install -r requirements.txt`
+
+## Configure
+1. copy `transfermission_config.yaml.example` to `transfermission_config.yaml` (Keep it in the same dir)
+2. Update `transfermission_config.yaml` to match your environment
 
 ## Running
 Use `cli.py --help` to see available options.

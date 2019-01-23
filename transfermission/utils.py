@@ -115,7 +115,7 @@ def process_item(item_type, torrent, config, operation, dry_run=False):
         season_regex = config.get('season_regex')
         if not season_regex:
             # I save my Season names as "Season 1", therefor exclude any starting zeros in season
-            season_regex = 's0?(\d+)e\d\d'
+            season_regex = r's0?(\d+)e\d\d'
         season = re.search(season_regex, torrent.name, re.I).group(1)
         log.debug('Season: %s', season)
 

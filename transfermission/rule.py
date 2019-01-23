@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime
 
-from transfermission.config import Config
+from transfermission.config import config
 
 log = logging.getLogger(__name__)
 

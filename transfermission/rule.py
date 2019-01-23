@@ -3,12 +3,14 @@ import os
 import re
 from datetime import datetime
 
-from config import config
+from transfermission.config import Config
 
 log = logging.getLogger(__name__)
 
+
 class Rule:
     id = 0
+
     def __init__(self, conditions=None, actions=None):
         self.id = Rule.id = Rule.id + 1
         self.conditions = conditions or []

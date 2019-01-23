@@ -1,5 +1,6 @@
 from transfermission.utils import age
-from transfermission.config import config
+from transfermission.config import Config
+from transfermission.rule import Rule
 from datetime import datetime
 
 
@@ -10,6 +11,12 @@ def test_age():
 
 
 def test_config():
-    test = config
+    test = Config()
     assert isinstance(test, dict)
     assert test == {}
+
+
+def test_rules():
+    test = Rule()
+    assert isinstance(test, Rule)
+    assert test.id == 1

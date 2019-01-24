@@ -54,7 +54,7 @@ class EpisodeManager:
             show_path = os.path.join(tv_shows_path, show)
             if not os.path.isdir(show_path):
                 continue
-            show_slug = re.sub('\W', '', show.lower().replace('the', ''))
+            show_slug = re.sub(r'\W', '', show.lower().replace('the', ''))
             shows[show_slug] = {'name': show}
 
             # Add seasons info as a map of {int(season number): directory name}
@@ -63,7 +63,7 @@ class EpisodeManager:
             for season_dir in season_dirs:
                 if not os.path.isdir(os.path.join(show_path, season_dir)):
                     continue
-                match = re.search('\d+', season_dir)
+                match = re.search(r'\d+', season_dir)
                 if match:
                     # Dicts with int as key are weird but handy
                     seasons[int(match.group(0))] = season_dir
@@ -72,12 +72,12 @@ class EpisodeManager:
 
     @staticmethod
     def get_episode_info(name):
-        matches = re.findall( '^(.*?)se?(\d\d?)ep?\d\d?', name.lower())
+        matches = re.findall(r'^(.*?)se?(\d\d?)ep?\d\d?', name.lower())
         if not matches:
             return False
 
         show_name = matches[0][0]
         season = matches[0][1]
         # remove non alphanumerics and 'the's for matching with existing dirs
-        show_slug = re.sub('\W', '', show_name.replace('the', ''))
+        show_slug = re.sub(r'\W', '', show_name.replace('the', ''))
         return {'show_name': show_name, 'show_slug': show_slug, 'season': int(season)}

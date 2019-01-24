@@ -1,4 +1,4 @@
-from transfermission.utils import age
+from transfermission.utils import age, read_config
 from transfermission.config import Config
 from transfermission.rule import Rule
 from datetime import datetime
@@ -10,7 +10,7 @@ def test_age():
     assert test == 0
 
 
-def test_config():
+def test_config_class():
     test = Config()
     assert isinstance(test, dict)
     assert test == {}
@@ -20,3 +20,15 @@ def test_rules():
     test = Rule()
     assert isinstance(test, Rule)
     assert test.id == 1
+
+
+def test_read_config():
+    test_config = read_config('transfermission_config.yaml.example')
+    assert isinstance(test_config, dict)
+
+    # These are the options that should exist in the example config
+    options = ('transmission_url', 'transmission_user', 'transmission_password', 'rules')
+    for option in options:
+        assert option in test_config
+
+    assert isinstance(test_config['rules'], list)

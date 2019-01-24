@@ -36,6 +36,7 @@ def cli(dry_run, verbose, name_condition=None):
         log.info('Dry run mode. No changes will be done')
 
     rules = [Rule(**rule_config) for rule_config in config['rules']]
+    # A bit hacky perhaps, but convenient..
     if name_condition:
         [r.conditions.append({'name': name_condition}) for r in rules]
 
@@ -56,6 +57,8 @@ def cli(dry_run, verbose, name_condition=None):
             if rule.matches(torrent):
                 log.info('%s matches rule #%s. Running actions.', torrent.name, rule.id)
                 rule.run_actions(torrent)
+                if rule.last:
+                    break
 
 
 def mock_torrents():

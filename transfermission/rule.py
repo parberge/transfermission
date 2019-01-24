@@ -3,7 +3,8 @@ import os
 import re
 from datetime import datetime
 
-from transfermission.config import config
+from config import config
+from episode_manager import EpisodeManager
 
 log = logging.getLogger(__name__)
 
@@ -11,10 +12,11 @@ log = logging.getLogger(__name__)
 class Rule:
     id = 0
 
-    def __init__(self, conditions=None, actions=None):
+    def __init__(self, conditions=None, actions=None, last=True):
         self.id = Rule.id = Rule.id + 1
         self.conditions = conditions or []
         self.actions = actions or []
+        self.last = last
 
     def matches(self, torrent):
         return all([
@@ -30,18 +32,14 @@ class Rule:
 
     def run_actions(self, torrent):
         for i, action in enumerate(self.actions, 1):
-            # TODO: support complex config as arg
             action_name, action_arg = list(action.items())[0]
-            if config['dryrun']:
-                log.info('Dryrun - skipping running action #%s: %s', i, action_name)
+            log.info('Running action #%s: %s', i, action_name)
+            action_method = getattr(self, f'_action_{action_name}')
+            # Support simple or complex action config
+            if isinstance(action_arg, dict):
+                action_method(torrent, **action_arg)
             else:
-                log.info('Running action #%s: %s', i, action_name)
-                action_method = getattr(self, f'_action_{action_name}')
-                # Support simple or complex action config
-                if isinstance(action_arg, dict):
-                    action_method(torrent, **action_arg)
-                else:
-                    action_method(torrent, action_arg)
+                action_method(torrent, action_arg)
 
     def _condition_name(self, torrent, pattern):
         return bool(re.search(pattern, torrent.name))
@@ -75,8 +73,21 @@ class Rule:
             log.info('Adding directory to path: %s', path)
 
         log.info('Moving "%s" to %s', torrent.name, path)
+        if config['dryrun']:
+            return
         # Give a generous timeout since moving loads of GBs can take a while
         torrent.move_data(path, timeout=1200)
 
+    def _action_episode_sort(self, torrent, tv_shows_path, season_template):
+        assert os.path.isdir(tv_shows_path), f'No such directory: {tv_shows_path}'
+        path = EpisodeManager.get_episode_path(torrent.name, tv_shows_path, season_template)
+        if not path:
+            log.error('Could not determine path for "%s"', torrent.name)
+            return
+        self._action_move_data(torrent, path)
+
     def _action_call_url(self, torrent, url):
         log.info('Calling URL "%s"', url)
+        if config['dryrun']:
+            return
+        pass

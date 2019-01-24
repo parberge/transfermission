@@ -4,19 +4,30 @@ transmission_user: example
 transmission_password: example
 
 rules:
-  - conditions:
-      #- name_matches: '\W[sS]\d{2}'
-      - name_matches: '[tT]orrent \d'
-      - completed: true
-      - ratio: 0.2
-      - age: 1
-    actions:
-      # Simple form (action takes one arg):
-      - move_data: '/some/path'
-      # Complex form (action takes named args):
-      - move_data:
-          path: '/some/path'
-          # Make sure torrent is downloaded to its own dir
-          use_dir: true
-      #- symlink: '/some/path'
-      - call_url: 'http://kodi/updatelibrary'
+- conditions:
+    - name: '(720|1080)p'
+    - name_not: '\W[sS]\d{2}'
+    - completed: true
+    - download_dir: '/srv/share/Downloads'
+  actions:
+    # Simple form (action takes one arg):
+    - move_data: '/srv/share/Movies2'
+    # Complex form (action takes named args):
+    - move_data:
+        path: '/srv/share/Movies2'
+        # use_dir makes sure the movie gets its own dir in the target path
+        use_dir: true
+    # TODO: implement
+    - symlink: '/some/path'
+    # TODO: implement
+    - call_url: 'http://kodi/updatelibrary'
+  # Apply no further rules to torrent if this one matches. true if default.
+  last: true
+- conditions:
+    - name: '\W[sS][eE]?(\d\d?)[eE][pP]?\d\d?'
+    - completed: true
+    - download_dir: '/srv/share/Downloads'
+  actions:
+    - episode_sort:
+        tv_shows_path: '/srv/share/Series'
+        season_template: 'Season {}'

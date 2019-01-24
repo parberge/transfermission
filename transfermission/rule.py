@@ -3,8 +3,8 @@ import os
 import re
 from datetime import datetime
 
-from config import config
-from episode_manager import EpisodeManager
+from .config import config
+from .episode_manager import EpisodeManager
 
 log = logging.getLogger(__name__)
 

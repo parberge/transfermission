@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 import click
 import transmissionrpc
 
-from config import config
-from rule import Rule
-from utils import read_config
+from transfermission.config import config
+from transfermission.rule import Rule
+from transfermission.utils import read_config
 
 log = logging.getLogger()
 handler = logging.StreamHandler()
@@ -19,18 +19,19 @@ log.addHandler(handler)
 
 
 @click.command()
+@click.option('--config-file', '-f', help='Path to config file. Defaults to ./config.yml', default='config.yml')
 @click.option('--dry-run', '-d', help='Don\'t run actions', is_flag=True)
 @click.option('--verbose', '-v', help='Verbose', is_flag=True)
 @click.option('--name-condition', '-n', help='Add an extra name condition to all rules. '
     'Handy for temporarily limiting the scope.',
 )
-def cli(dry_run, verbose, name_condition=None):
+def cli(config_file, dry_run, verbose, name_condition=None):
     log.setLevel(logging.DEBUG if verbose else logging.INFO)
     if verbose:
         # Set transmissonrpc logger to logging INFO when we run debug
         logging.getLogger('transmissionrpc').setLevel(logging.INFO)
 
-    config.update(read_config('transfermission_config.yaml'))
+    config.update(read_config(config_file))
     config['dryrun'] = dry_run
     if dry_run:
         log.info('Dry run mode. No changes will be done')

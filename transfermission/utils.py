@@ -9,13 +9,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-def read_config(file_path):
+def read_config(path):
     log.debug('Reading config')
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    config_file = "{0}/{1}".format(dir_path, file_path)
-    with open(config_file) as f:
+    with open(path) as f:
         config = yaml.load(f)
-
     return config
 
 

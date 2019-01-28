@@ -1,7 +1,16 @@
 from transfermission.utils import age, read_config
 from transfermission.config import config
 from transfermission.rule import Rule
+from transfermission.episode_manager import EpisodeManager
 from datetime import datetime
+
+import logging
+
+log = logging.getLogger()
+handler = logging.StreamHandler()
+log.addHandler(handler)
+# Might be useful to set log level in tests to debug
+log.setLevel(logging.CRITICAL)
 
 
 def test_age():
@@ -41,3 +50,12 @@ def test_example_config():
         assert option in example_config
 
     assert isinstance(example_config['rules'], list)
+
+
+def test_episode_manager(tmp_path):
+    fake_shows_dir = tmp_path / "series"
+    fake_shows_dir.mkdir()
+    test = EpisodeManager()
+    test.find_existing_shows(tv_shows_path=fake_shows_dir)
+    # Our tmpdir doesn't contain any shows so existing shows should still be empty
+    assert test.existing_shows == {}

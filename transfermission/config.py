@@ -2,6 +2,7 @@
 class Config(dict):
     """A proxy class for config to be accessible from anywhere"""
     config = {}
+
     def __getitem__(self, key):
         return self.config[key]
 

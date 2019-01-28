@@ -14,6 +14,15 @@ def test_config():
     test = config
     assert isinstance(test, dict)
     assert test == {}
+    test.update(read_config('config.yml.example'))
+    assert test['transmission_url']
+
+    # Not the most useful test, but it will test the __setitem__ of Config class
+    test['foo'] = 'bar'
+    assert test['foo'] == 'bar'
+
+    # Verify that the dict is still empty
+    assert test == {}
 
 
 def test_rules():
@@ -22,13 +31,13 @@ def test_rules():
     assert test.id == 1
 
 
-def test_read_config():
-    test_config = read_config('config.yml.example')
-    assert isinstance(test_config, dict)
+def test_example_config():
+    example_config = read_config('config.yml.example')
+    assert isinstance(example_config, dict)
 
     # These are the options that should exist in the example config
     options = ('transmission_url', 'transmission_user', 'transmission_password', 'rules')
     for option in options:
-        assert option in test_config
+        assert option in example_config
 
-    assert isinstance(test_config['rules'], list)
+    assert isinstance(example_config['rules'], list)

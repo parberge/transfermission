@@ -68,7 +68,11 @@ class EpisodeManager:
                     # Dicts with int as key are weird but handy
                     seasons[int(match.group(0))] = season_dir
             shows[show_slug]['seasons'] = seasons
-        cls.existing_shows = shows
+
+        if shows:
+            cls.existing_shows = shows
+        else:
+            log.info(f"Didn't find any show in {tv_shows_path}")
 
     @staticmethod
     def get_episode_info(name):

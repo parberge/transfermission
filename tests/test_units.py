@@ -57,5 +57,20 @@ def test_episode_manager(tmp_path):
     fake_shows_dir.mkdir()
     test = EpisodeManager()
     test.find_existing_shows(tv_shows_path=fake_shows_dir)
+
     # Our tmpdir doesn't contain any shows so existing shows should still be empty
     assert test.existing_shows == {}
+
+    fake_show = fake_shows_dir / "the fake show" / "Season 1"
+    fake_show.mkdir(parents=True)
+    test.find_existing_shows(tv_shows_path=fake_shows_dir)
+
+    existing_fake_show = test.existing_shows.get('fakeshow')
+    assert isinstance(existing_fake_show, dict
+                      )
+    assert existing_fake_show
+    for key in ('name', 'seasons'):
+        assert key in existing_fake_show
+
+    assert isinstance(existing_fake_show['seasons'], dict)
+    assert existing_fake_show['seasons'][1]

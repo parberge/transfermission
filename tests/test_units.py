@@ -39,6 +39,14 @@ def test_rules():
     assert isinstance(test, Rule)
     assert test.id == 1
 
+    # Create a fake class to get the expected attribute
+    class FakeTorrent:
+        name = 'fake torrent name'
+
+    fake_torrent = FakeTorrent()
+    assert test.run_condition(fake_torrent, 'name', 'fake') is True
+    assert test.run_condition(fake_torrent, 'name', 'should not match') is False
+
 
 def test_example_config():
     example_config = read_config('config.yml.example')
